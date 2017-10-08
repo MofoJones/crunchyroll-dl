@@ -50,7 +50,6 @@ def main(username, password, url, youtube_dl_params):
     subprocess.run(command)
 
 
-
 def create_cookie_file(cookies, cookie_file):
     """Take a list of webdriver cookie dictionaries and create a netscape cookie file.
 
@@ -78,6 +77,11 @@ def fix_crunchyroll_cookie_issues(cookie):
 
 
 def fix_issues(cookie):
+    """Fix issues caused by specific cookies by changing their values.
+
+    :param cookie: single cookie received from chromedriver
+    :type cookie: dictionary
+    """
     cookie_issues_list = [
         '__qca', '_ga', '_gat', '_gid'
     ]
@@ -87,10 +91,16 @@ def fix_issues(cookie):
 
 
 def delete_bad_cookies(cookie):
+    """Effectively delete bad cookies.
+
+    Deletion of bad cookies is done by replacing their domain to a '#' so that when it's written
+    to the cookie_file it's considered a comment.
+    :param cookie: single cookie received from chromedriver
+    :type cookie: dictionary
+    """
     bad_cookies_list = [
         'ajs_user_id', 'ajs_group_id', 'ajs_anonymous_id'
     ]
-    cookie_bad = False
     for bad_cookie in bad_cookies_list:
         if cookie['name'] == bad_cookie:
             cookie['domain'] = '#'

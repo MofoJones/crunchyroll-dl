@@ -2,19 +2,16 @@ import time
 import logging
 import subprocess
 import tempfile
+import os
+from getpass import getpass
+
 from selenium import webdriver
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 LOGGER.addHandler(logging.StreamHandler())
 
-
-def main():
-    username = input('Username: ')
-    password = input('Password: ')
-    url = input('URL: ')
-    youtube_dl_params = input('youtube_dl params: ')
-
+def main(username, password, url, youtube_dl_params):
     driver = webdriver.Chrome()
     driver.get('http://www.crunchyroll.com/login')
     while "Just a moment" in driver.title:
@@ -99,4 +96,8 @@ def populate_dict_with_missing_keys(flawed_dict, keys):
 
 
 if __name__ == '__main__':
-    main()
+    username = input('Username: ')
+    password = getpass('Password: ')
+    url = input('URL: ')
+    youtube_dl_params = input('youtube_dl params: ')
+    main(username, password, url, youtube_dl_params)

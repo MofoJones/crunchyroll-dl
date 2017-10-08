@@ -11,7 +11,19 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 LOGGER.addHandler(logging.StreamHandler())
 
+
 def main(username, password, url, youtube_dl_params):
+    """Download video from crunchyroll.
+
+    :param username: Username for the account
+    :type username: str
+    :param password: Password for the account
+    :type password: str
+    :param url: URL to the video or series overview page
+    :type url: str
+    :param youtube_dl_params: extra space seperated parameters accepted by youtube_dl
+    :type youtube_dl_params: str
+    """
     driver = webdriver.Chrome()
     driver.get('http://www.crunchyroll.com/login')
     while "Just a moment" in driver.title:
@@ -27,8 +39,9 @@ def main(username, password, url, youtube_dl_params):
     LOGGER.debug(agent)
     command = [
         'youtube_dl', url, '--verbose', '--user-agent', "{}".format(agent), '-u', username, '-p',
-        'password', '--cookies', 'cookie_file_name', '-f', 'best'
+        password, '--cookies', 'cookie_file_name', '-f', 'best'
     ]
+    command.extend(youtube_dl_params.split(' '))
 
     command_debug = command.copy()
     command_debug[5] = '******'
@@ -39,11 +52,13 @@ def main(username, password, url, youtube_dl_params):
 
 
 def create_cookie_file(cookies, cookie_file):
+    """Take a list of webdriver cookie dictionaries and create a netscape cookie file.
+
+    :param cookies: Webdriver cookie dictionary.
+    :type cookies: dict
+    :param cookie_file: file object to make a netscape cookie file opened with 'w'
+    :type cookie_file: file
     """
-    Take a list of webdriver cookie dictionaries and create a
-    netscape cookie file.
-    """
-    cookie_file.write('# Netscape HTTP Cookie File')
     cookie_file.write('# Netscape HTTP Cookie File\n\n')
     for cookie in cookies:
         fix_crunchyroll_cookie_issues(cookie)
@@ -53,8 +68,8 @@ def create_cookie_file(cookies, cookie_file):
 
 
 def fix_crunchyroll_cookie_issues(cookie):
-    """
-    Fix the cookie issues encountered by youtube_dl.
+    """Fix the cookie issues encountered by youtube_dl.
+
     :param cookie: single cookie received from chromedriver
     :type cookie: dictionary
     """
@@ -65,8 +80,8 @@ def fix_crunchyroll_cookie_issues(cookie):
 
 
 def cookie_dict_to_cookie_line(cookie):
-    """
-    Convert a cookie dictionary to a netscape cookie line.
+    """Convert a cookie dictionary to a netscape cookie line.
+
     :param cookie: dictionary of cookies as obtained from
     selenium.webdriver.get_cookies()
     :return: string in the format of a line in the cookie file.
@@ -86,15 +101,14 @@ def cookie_dict_to_cookie_line(cookie):
 
 
 def populate_dict_with_missing_keys(flawed_dict, keys):
-    """
-    Ensure a dict has all the keys by populating it
-    with empty values. (Destructive method)
+    """Ensure a dict has all the keys by populating it with empty values (Destructive method).
+
     :param flawed_dict: dictionary possibly containing missing fields.
     :param keys: Tuple of required keys.
     :return: dictionary with all the keys.
     """
     for key in keys:
-        if not key in flawed_dict:
+        if key not in flawed_dict:
             flawed_dict[key] = ''
     return flawed_dict
 
@@ -102,8 +116,8 @@ def populate_dict_with_missing_keys(flawed_dict, keys):
 if __name__ == '__main__':
     # Change directory to download to ~/Downloads
     os.chdir('{home}/Downloads/'.format(home=os.getenv('HOME')))
-    username = input('Username: ')
-    password = getpass('Password: ')
-    url = input('URL: ')
-    youtube_dl_params = input('youtube_dl params: ')
-    main(username, password, url, youtube_dl_params)
+    USERNAME = input('Username: ')
+    PASSWORD = getpass('Password: ')
+    URL = input('URL: ')
+    YOUTUBE_DL_PARAMS = input('Input extra youtube_dl params as space seperated values: ')
+    main(USERNAME, PASSWORD, URL, YOUTUBE_DL_PARAMS)

@@ -38,16 +38,16 @@ def main(username, password, url, youtube_dl_params):
     agent = driver.execute_script("return navigator.userAgent")
     LOGGER.debug(agent)
     command = [
-        'youtube_dl', url, '--verbose', '--user-agent', "{}".format(agent), '-u', username, '-p',
+        'youtube-dl', url, '--verbose', '--user-agent', '"{}"'.format(agent), '-u', username, '-p',
         password, '--cookies', 'cookie_file_name', '-f', 'best'
     ]
     command.extend(youtube_dl_params.split(' '))
-
     command_debug = command.copy()
     command_debug[5] = '******'
     command_debug[7] = '******'
     LOGGER.debug(command_debug)
-    subprocess.run(command)
+    # subprocess.run(command)
+    print(' '.join(command))
     driver.close()
 
 

@@ -38,17 +38,17 @@ def main(username, password, url, youtube_dl_params):
     agent = driver.execute_script("return navigator.userAgent")
     LOGGER.debug(agent)
     command = [
-        'youtube-dl', url, '--verbose', '--user-agent', '"{}"'.format(agent), '-u', username, '-p',
-        password, '--cookies', 'cookie_file_name', '-f', 'best'
+        'youtube-dl', url, '--user-agent', '{}'.format(agent), '-u', username, '-p',
+        password, '--cookies', cookie_file_name, '-f', 'best'
     ]
     command.extend(youtube_dl_params.split(' '))
     command_debug = command.copy()
     command_debug[5] = '******'
     command_debug[7] = '******'
     LOGGER.debug(command_debug)
-    # subprocess.run(command)
-    print(' '.join(command))
     driver.close()
+    subprocess.run(command)
+
 
 
 def create_cookie_file(cookies, cookie_file):
@@ -73,10 +73,27 @@ def fix_crunchyroll_cookie_issues(cookie):
     :param cookie: single cookie received from chromedriver
     :type cookie: dictionary
     """
-    cookie_issues_list = ['__qca', '_ga', '_gid']
+    fix_issues(cookie)
+    delete_bad_cookies(cookie)
+
+
+def fix_issues(cookie):
+    cookie_issues_list = [
+        '__qca', '_ga', '_gat', '_gid'
+    ]
     for issue in cookie_issues_list:
         if issue == cookie['name']:
             cookie['httpOnly'] = True
+
+
+def delete_bad_cookies(cookie):
+    bad_cookies_list = [
+        'ajs_user_id', 'ajs_group_id', 'ajs_anonymous_id'
+    ]
+    cookie_bad = False
+    for bad_cookie in bad_cookies_list:
+        if cookie['name'] == bad_cookie:
+            cookie['domain'] = '#'
 
 
 def cookie_dict_to_cookie_line(cookie):

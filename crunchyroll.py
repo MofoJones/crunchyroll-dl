@@ -41,6 +41,7 @@ def create_cookie_file(cookies, cookie_file):
     netscape cookie file.
     """
     cookie_file.write('# Netscape HTTP Cookie File')
+    cookie_file.write('# Netscape HTTP Cookie File\n\n')
     for cookie in cookies:
         fix_crunchyroll_cookie_issues(cookie)
         cookie_file.write(cookie_dict_to_cookie_line(cookie))

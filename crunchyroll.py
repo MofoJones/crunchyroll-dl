@@ -22,16 +22,19 @@ def main(username, password, url, youtube_dl_params):
     cookies = driver.get_cookies()
     cookie_file_name = create_cookie_file(cookies, cookie_tempfile)
     LOGGER.debug(cookie_file_name)
+
     agent = driver.execute_script("return navigator.userAgent")
     LOGGER.debug(agent)
-    arguments = '{} --verbose --user-agent "{}" -u {} -p {} --cookies {} ' \
-                '-f best'.format(
-                    url, agent, username, password, cookie_file_name
-                )
-    command = ['youtube-dl', arguments + youtube_dl_params]
-    LOGGER.debug(command)
-    subprocess.Popen(command)
-    input('press enter to quit')
+    command = [
+        'youtube_dl', url, '--verbose', '--user-agent', "{}".format(agent), '-u', username, '-p',
+        'password', '--cookies', 'cookie_file_name', '-f', 'best'
+    ]
+
+    command_debug = command.copy()
+    command_debug[5] = '******'
+    command_debug[7] = '******'
+    LOGGER.debug(command_debug)
+    subprocess.run(command)
     driver.close()
 
 

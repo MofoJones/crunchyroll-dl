@@ -96,6 +96,8 @@ def populate_dict_with_missing_keys(flawed_dict, keys):
 
 
 if __name__ == '__main__':
+    # Change directory to download to ~/Downloads
+    os.chdir('{home}/Downloads/'.format(home=os.getenv('HOME')))
     username = input('Username: ')
     password = getpass('Password: ')
     url = input('URL: ')
